@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>List of the patients</title>
+    <style>
+        td{
+            text-align:center;
+        }
+        table{
+             border-collapse:separate;
+             border-spacing: 0 1em;
+        }
+        th{
+            border: 1px solid black;
+        }
+        tr{
+            border: solid;
+            border-width: 1px 0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div>
+        {% if taskstate == 'FILE UPLOADED SUCCESSFULLY' %}
+        <h2 style="color:green">{{taskstate}}</h2>
+        {% endif %}
+        {% if taskstate == 'FILE PROCESSING' %}
+        <h2 style="color:blue">{{taskstate}}</h2>
+        {% endif %}
+        {% if taskstate == 'UPLOAD FAILED PLEASE CHECK THE FILE' %}
+        <h2 style="color:red">{{taskstate}}</h2>
+        {% endif %}
+        <h2 style="color:darkcyan">{{records}}</h2>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <label>Search</label>
+        <select name="fieldnames" id="field">
+          <option value="firstname">Firstname</option>
+          <option value="lastname">Lastname</option>
+          <option value="patientid">PatientId</option>
+          <option value="emailaddress">EmailAddress</option>
+          <option value="eligibleforinsurance">Insurance</option>
+          <option value="dateofbirth">DOB(YYYY-MM-DD)</option>
+        </select>
+        <input type="text" name="search" placeholder="Enter field to search">
+        <br>
+        <label>Filter</label>
+        <input type="text" name="firstname" placeholder="Enter firstname">
+        <input type="text" name="lastname" placeholder="Enter lastname">
+        <input type="text" name="dateofbirth" placeholder="Enter DOB (YYYY-MM-DD)">
+        <input type="text" name="insurance" placeholder="Enter insurance eligibility">
+        <button type="submit">Go</button>
+    </form>
+</div>
+<br>
+<div>
+    <h1 style="text-align:center">Patient list</h1>
+    <table style="border:1px solid black;outline:thin solid;margin-left:auto;margin-right:auto;">
+        <thead>
+            <th>#</th>
+            <th>PATIENT_ID</th>
+            <th>FIRSTNAME</th>
+            <th>LASTNAME</th>
+            <th>EMAIL_ADDRESS</th>
+            <th>DATE_OF_BIRTH</th>
+            <th>ELIGIBLE_FOR_INSURANCE</th>
+            <th>CREATED_DATE_AND_TIME</th>
+        </thead>
+            <tbody>
+                {% for list in patient_list %}
+                    <tr>
+                        <td >{{ forloop.counter }}</td>
+                        <td>{{ list.patient_id}}</td>
+                        <td>{{ list.first_name}}</td>
+                        <td>{{ list.last_name}}</td>
+                        <td>{{ list.email_address}}</td>
+                        <td>{{ list.date_of_birth}}</td>
+                        <td >{{ list.eligible_for_insurance}}</td>
+                        <td>{{ list.created_datetime}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>
+</body>
+</html>

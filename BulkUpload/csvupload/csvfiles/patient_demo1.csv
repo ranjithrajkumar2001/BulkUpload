@@ -1,0 +1,5 @@
+dob,eligible_for_insurance,email_address,first_name,last_name,patient_id
+2000-02-08,yes,demo1@gmail.com,John,Lawrence,pid001
+1990-11-21,no,demo2@gmail.com,Chris,Randy,pid002
+1987-04-17,yes,demo3@gmail.com,Ben,Christian,pid003
+2001-02-02,no,demo4@gmail.com,John,Berg,pid004
