@@ -1,14 +1,11 @@
-from curses import has_key
-from time import sleep
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
 from django.views.generic.edit import FormView
 from .functions import handle_uploaded_file
 from csvupload.forms import UploadForm
 from csvupload.models import Patient
 from .tasks import file_read
 from django.shortcuts import render, redirect
-from .functions import recordcount
+from django.core.paginator import Paginator
+from django.http import HttpResponse
 
 
 class CsvFileUpload(FormView):
@@ -16,22 +13,24 @@ class CsvFileUpload(FormView):
     form_class = UploadForm
     model = Patient
 
-    try:
-        def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        try:
             file = request.FILES['file']
             file_name = handle_uploaded_file(file)
             task = file_read.delay(file_name)
-            totalrecords = recordcount(file_name)
+            print(task)
             while not task.ready():
                 if task.state == 'PENDING':
                     print("PROCESSING")
             if task.state == 'SUCCESS':
                 print("COMPLETED")
-            return redirect('patientlist', taskstatus=task.state, records=totalrecords)
-    except Exception as e:
-        print(e)
-        import traceback
-        traceback.print_exc()
+                return redirect('patientlist')
+            if task.state == 'FAILURE':
+                return redirect('csvfileupload')
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
 
 
 class PatientList(FormView):
@@ -39,22 +38,14 @@ class PatientList(FormView):
     model = Patient
     try:
         def get(self, request, *args, **kwargs):
-            data = Patient.objects.all()
-            taskstatus = kwargs.get('taskstatus')
-            records = kwargs.get('records')
-            recordsst = 'Total Records Read : '+records
-            if taskstatus == 'SUCCESS':
-                taskstatus = "FILE UPLOADED SUCCESSFULLY"
-            elif taskstatus == 'PENDING':
-                taskstatus = "FILE PROCESSING"
-            elif taskstatus == 'FAILURE':
-                taskstatus = "UPLOAD FAILED PLEASE CHECK THE FILE"
-                data = {}
-                recordsst = 'Total Records Read :0'
+            records_count = Patient.objects.all().count()
+            data = Patient.objects.all().order_by('first_name')
+            paginator = Paginator(data, 10)
+            page_number = request.GET.get('page')
+            final_data = paginator.get_page(page_number)
             patient_data = {
-                "patient_list": data,
-                "taskstate": taskstatus,
-                "records": recordsst
+                "patient_list": final_data,
+                "records_count": records_count
             }
             return render(request, self.template_name, patient_data)
 

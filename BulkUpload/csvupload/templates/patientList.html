@@ -5,38 +5,15 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <title>List of the patients</title>
     <style>
-        td{
-            text-align:center;
-        }
-        table{
-             border-collapse:separate;
-             border-spacing: 0 1em;
-        }
-        th{
-            border: 1px solid black;
-        }
-        tr{
-            border: solid;
-            border-width: 1px 0;
-        }
     </style>
 </head>
 <body>
 <div>
-    <div>
-        {% if taskstate == 'FILE UPLOADED SUCCESSFULLY' %}
-        <h2 style="color:green">{{taskstate}}</h2>
-        {% endif %}
-        {% if taskstate == 'FILE PROCESSING' %}
-        <h2 style="color:blue">{{taskstate}}</h2>
-        {% endif %}
-        {% if taskstate == 'UPLOAD FAILED PLEASE CHECK THE FILE' %}
-        <h2 style="color:red">{{taskstate}}</h2>
-        {% endif %}
-        <h2 style="color:darkcyan">{{records}}</h2>
-    </div>
     <form method="post">
         {% csrf_token %}
         <label>Search</label>
@@ -55,38 +32,65 @@
         <input type="text" name="lastname" placeholder="Enter lastname">
         <input type="text" name="dateofbirth" placeholder="Enter DOB (YYYY-MM-DD)">
         <input type="text" name="insurance" placeholder="Enter insurance eligibility">
-        <button type="submit">Go</button>
+              <button type="submit" class="btn btn-primary btn-sm">Search</button>
     </form>
 </div>
 <br>
+<h2>Total Records:{{records_count}}</h2>
+<div class="jumbotron text-center">
+    <h2 >Patient list</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">PATIENT_ID</th>
+          <th scope="col">FIRSTNAME</th>
+          <th scope="col">LASTNAME</th>
+          <th scope="col">EMAIL_ADDRESS</th>
+          <th scope="col">DATE_OF_BIRTH</th>
+          <th scope="col">ELIGIBLE_FOR_INSURANCE</th>
+          <th scope="col">CREATED_DATE_AND_TIME</th>
+        </tr>
+      </thead>
+  <tbody>
+  {% for list in patient_list %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <th scope="row">{{ list.patient_id}}</th>
+      <td>{{ list.first_name}}</td>
+      <td>{{ list.last_name}}</td>
+      <td>{{ list.email_address}}</td>
+      <td>{{ list.date_of_birth}}</td>
+      <td>{{ list.eligible_for_insurance}}</td>
+      <td>{{ list.created_datetime}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 <div>
-    <h1 style="text-align:center">Patient list</h1>
-    <table style="border:1px solid black;outline:thin solid;margin-left:auto;margin-right:auto;">
-        <thead>
-            <th>#</th>
-            <th>PATIENT_ID</th>
-            <th>FIRSTNAME</th>
-            <th>LASTNAME</th>
-            <th>EMAIL_ADDRESS</th>
-            <th>DATE_OF_BIRTH</th>
-            <th>ELIGIBLE_FOR_INSURANCE</th>
-            <th>CREATED_DATE_AND_TIME</th>
-        </thead>
-            <tbody>
-                {% for list in patient_list %}
-                    <tr>
-                        <td >{{ forloop.counter }}</td>
-                        <td>{{ list.patient_id}}</td>
-                        <td>{{ list.first_name}}</td>
-                        <td>{{ list.last_name}}</td>
-                        <td>{{ list.email_address}}</td>
-                        <td>{{ list.date_of_birth}}</td>
-                        <td >{{ list.eligible_for_insurance}}</td>
-                        <td>{{ list.created_datetime}}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-    </table>
+    <nav aria-label="...">
+      <ul class="pagination">
+          {% if patient_list.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1" tabindex="-1">First</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{patient_list.previous_page_number}}" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+          {%endif%}
+        <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+        <li class="page-item" aria-current="page">
+            <a class="page-link" href="?page=2">2 <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
+          {% if patient_list.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{patient_list.next_page_number}}">Next</a>
+        </li>
+          {%endif%}
+      </ul>
+    </nav>
+</div>
 </div>
 </body>
 </html>

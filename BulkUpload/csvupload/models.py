@@ -1,12 +1,5 @@
-import csv
-import os.path
-
 from django.db import models
 import uuid
-import datetime
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class Patient(models.Model):
@@ -14,7 +7,7 @@ class Patient(models.Model):
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
-    patient_id = models.CharField(max_length=256, default=None, blank=False)
+    patient_id = models.CharField(max_length=256, default=None, blank=False, unique=True)
     first_name = models.CharField(max_length=256, default=None, blank=False)
     last_name = models.CharField(max_length=256, default=None, blank=False)
     email_address = models.EmailField(unique=True, default=None, blank=False)

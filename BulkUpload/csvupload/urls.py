@@ -4,5 +4,5 @@ from csvupload import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', views.CsvFileUpload.as_view(),name='csvfileupload'),
-    path('patientlist/<taskstatus>/<records>',views.PatientList.as_view(), name='patientlist'),
+    path('patientlist/',views.PatientList.as_view(), name='patientlist'),
 ]

@@ -17,14 +17,6 @@ def handle_uploaded_file(f):
         traceback.print_exc()
 
 
-def recordcount(file_name):
-    with open('csvupload/csvfiles/' + file_name, newline='') as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=',', quotechar='|')
-        count = 0
-        for row in reader:
-            count += 1
-    return count
-
 
 
 
